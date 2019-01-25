@@ -1,3 +1,5 @@
+<h1>E-Investiment Groups App</h1>
+
 This app was developed with an idea of Online Chama Investiments:</br>
 1.Authentication system,login</br>
 2.Create a new Investment group </br>
