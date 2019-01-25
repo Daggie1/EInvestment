@@ -25,7 +25,7 @@ This app was developed with an idea of Online Chama Investiments:</br>
   </tr>
   <tr>
    <td><h2>Group Info Page</h2></br><img src="../master/app/src/main/res/drawable/group info.png?raw=true" width="350" height="400" /></td>
-      <td><h2>Positing page</h2></br><img src="../master/app/src/main/res/drawable/deposit processing.png?raw=true" width="350" height="400" /></td>
+      <td><h2>Depositing page</h2></br><img src="../master/app/src/main/res/drawable/deposit processing.png?raw=true" width="350" height="400" /></td>
       <td><h2>Mpesa simtoolkit Page</h2></br><img src="../master/app/src/main/res/drawable/mpesa_simtoolkit.png?raw=true" width="350" height="400" /></td>
 
   </table>
