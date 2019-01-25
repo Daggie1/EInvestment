@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">E-Investiments</string>
+    <string name="log_in">LOG IN</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="no_groups_found_for_you">No groups found for you</string>
+    <string name="create_one_by_clicking_button_below">create one by clicking + button below</string>
+</resources>

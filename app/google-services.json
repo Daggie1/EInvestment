@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1053786546646",
+    "firebase_url": "https://einvestment-2c97f.firebaseio.com",
+    "project_id": "einvestment-2c97f",
+    "storage_bucket": "einvestment-2c97f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1053786546646:android:5a15cd4ef424b141",
+        "android_client_info": {
+          "package_name": "com.example.anonymous.e_investment"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1053786546646-ou4jnv33bjc3q6vvqdc98uk3nn5h3mef.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.anonymous.e_investment",
+            "certificate_hash": "00cdb9f150b27b58c4342be498b361106137d14b"
+          }
+        },
+        {
+          "client_id": "1053786546646-ahm6cq16bumqedlckvbk8e0bdhm6iv9g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-kyVd5phzcXi6MPOVLhwVofDJnC7LJqE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1053786546646-ahm6cq16bumqedlckvbk8e0bdhm6iv9g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
