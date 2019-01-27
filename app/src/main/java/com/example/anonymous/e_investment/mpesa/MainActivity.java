@@ -151,6 +151,8 @@ public class MainActivity extends AppCompatActivity implements AuthListener, Mpe
     public void onMpesaSuccess(String MerchantRequestID, String CheckoutRequestID, String CustomerMessage) {
         dialog.hide();
         Toast.makeText(this, CustomerMessage, Toast.LENGTH_SHORT).show();
+
+        //add transaction
     }
     @Override
     protected void onResume() {

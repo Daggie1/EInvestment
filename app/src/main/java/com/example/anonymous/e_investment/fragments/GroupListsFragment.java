@@ -48,8 +48,8 @@ public class GroupListsFragment extends Fragment {
 LinearLayout no_item_layout;
     MyAdapter myAdapter = new MyAdapter(mGrouplistitems);
 
-    DatabaseReference dbRef ,dbrefcont;
-    Query query;
+    DatabaseReference dbrefcont;
+    Query dbRef ;
     public GroupListsFragment() {
         // Required empty public constructor
     }
@@ -75,7 +75,7 @@ LinearLayout no_item_layout;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        dbRef = FirebaseDatabase.getInstance().getReference("Groups");
+
         dbrefcont = FirebaseDatabase.getInstance().getReference("Contribution");
     }
 
@@ -87,6 +87,7 @@ LinearLayout no_item_layout;
         // Inflate the layout for this fragment
 
         View view = inflater.inflate(R.layout.fragment_group_lists, container, false);
+        getActivity().setTitle("Your Groups");
         fab=(FloatingActionButton) view.findViewById(R.id.fab);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.group_recyclerview);
        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
@@ -111,17 +112,39 @@ fab.setOnClickListener(new View.OnClickListener() {
     }
 
     public void updateRecyclerView() {
-
+        String user=FirebaseAuth.getInstance().getCurrentUser().getUid();
+        dbRef = FirebaseDatabase.getInstance().getReference("Contribution").orderByChild("userId").equalTo(user);
         dbRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
 
-                    mGrouplistitems.clear();
+                   mGrouplistitems.clear();
                     for (DataSnapshot contributionSnapShot : dataSnapshot.getChildren()) {
 
-                        Group groupmodel = contributionSnapShot.getValue(Group.class);
-                        mGrouplistitems.add(groupmodel);
+                        Query query=FirebaseDatabase.getInstance().getReference("Groups").orderByChild("groupId").equalTo(contributionSnapShot.child("group1d").getValue(String.class));
+                        query.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.exists()) {
+                                    //mGrouplistitems.clear();
+                                    for (DataSnapshot groupSnapShot : dataSnapshot.getChildren()) {
+
+                                        Group groupmodel = groupSnapShot.getValue(Group.class);
+                                        mGrouplistitems.add(groupmodel);
+                                    }
+
+                                }
+                                myAdapter.notifyDataSetChanged();
+
+                            }
+
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
                        }
 
                     myAdapter.notifyDataSetChanged();
@@ -133,36 +156,6 @@ fab.setOnClickListener(new View.OnClickListener() {
 
             }
         });
-
-       // Toast.makeText(getActivity(),"contributionlist=="+String.valueOf(mContributionlistitems.size()),Toast.LENGTH_LONG).show();
-        /*for(int i=0;i<=mContributionlistitems.size()-1;i++){
-            if (mContributionlistitems.get(i).getUserId() == FirebaseAuth.getInstance().getCurrentUser().getUid()) {
-                Query query=FirebaseDatabase.getInstance().getReference("Groups").orderByChild("groupId").equalTo(mContributionlistitems.get(i).getGroup1d());
-                query.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()) {
-                            mGrouplistitems.clear();
-                            for (DataSnapshot groupSnapShot : dataSnapshot.getChildren()) {
-
-                                Group groupmodel = groupSnapShot.getValue(Group.class);
-                                mGrouplistitems.add(groupmodel);
-                            }
-
-                        }
-                        Toast.makeText(getActivity(),"grouplist=="+String.valueOf(mGrouplistitems.size()),Toast.LENGTH_LONG).show();
-                        myAdapter.notifyDataSetChanged();
-
-                    }
-
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-            }
-        }*/
     }
 
     public class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
@@ -226,6 +219,7 @@ fab.setOnClickListener(new View.OnClickListener() {
 
             Intent newintent = new Intent(getActivity(), GroupInfoActivity.class);
             newintent.putExtra("selectedgroup_id", mgroupModel.getGroupId());
+            newintent.putExtra("selectedgroup_name", mgroupModel.getGroup_name());
             startActivity(newintent);
         }
     }

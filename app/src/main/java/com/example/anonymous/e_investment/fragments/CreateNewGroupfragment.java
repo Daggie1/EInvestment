@@ -50,7 +50,7 @@ public class CreateNewGroupfragment extends Fragment {
     String mcurrentLat,mCurrentLong;
     StorageReference photoref;
     DatabaseReference dbreference;
-    String senderlat,sendeerLang,marker;
+    String group_id;
     public CreateNewGroupfragment() {
         // Required empty public constructor
     }
@@ -58,9 +58,7 @@ public class CreateNewGroupfragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        senderlat=String.valueOf(-0.395541);
-        sendeerLang=String.valueOf(36.962156);
-        marker="Dedan Kimathi University of Technology";
+
         photoref= FirebaseStorage.getInstance().getReference();
         dbreference= FirebaseDatabase.getInstance().getReference("Groups");
     }
@@ -75,7 +73,9 @@ public class CreateNewGroupfragment extends Fragment {
         addOtherBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-startActivity(new Intent(getActivity(), AddMembersActivity.class));
+Intent addmembersintent=new Intent(new Intent(getActivity(), AddMembersActivity.class));
+addmembersintent.putExtra("Groupid",group_id);
+startActivity(addmembersintent);
             }
         });
         groupName =(AutoCompleteTextView) view.findViewById(R.id.addproductnametxt);
@@ -149,6 +149,7 @@ startActivity(new Intent(getActivity(), AddMembersActivity.class));
                                 String sellerId= FirebaseAuth.getInstance().getCurrentUser().getUid();
 
                                 Group  group=new Group(groupid,gname,"0",picurl);
+                                group_id=groupid;
                                 dbreference.child(id).setValue(group);
                                DatabaseReference query=FirebaseDatabase.getInstance().getReference("Contribution");
                                 String contributionid=query.push().getKey();

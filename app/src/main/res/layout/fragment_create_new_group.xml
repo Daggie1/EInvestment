@@ -28,7 +28,7 @@
     <Button
         android:id="@+id/addProductBtn"
         android:background="@color/colorPrimary"
-        android:text="CreateGroup"
+        android:text="Create Group"
         android:textColor="@color/colorWhite"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

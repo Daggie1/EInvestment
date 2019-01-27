@@ -23,6 +23,7 @@ import com.example.anonymous.e_investment.UI.Activities.GroupListActivity;
 import com.example.anonymous.e_investment.models.Contribution;
 
 import com.example.anonymous.e_investment.models.Member;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -35,13 +36,13 @@ import java.util.ArrayList;
 
 public class AddMembersActivity extends AppCompatActivity {
     ArrayList<Member> mMemberlistitems = new ArrayList<>();
-
+    ArrayList<String> selectedmembers = new ArrayList<>();
     RecyclerView mRecyclerView;
 Button add;
     FloatingActionButton fab;
     LinearLayout no_item_layout;
     MyAdapter myAdapter = new MyAdapter(mMemberlistitems);
-
+String group_id;
     DatabaseReference dbRef ,dbrefcont;
     Query query;
 
@@ -56,6 +57,7 @@ Button add;
     protected void onCreate(Bundle savedInstanceState) {
         dbRef = FirebaseDatabase.getInstance().getReference("Members");
         dbrefcont = FirebaseDatabase.getInstance().getReference("Contribution");
+        group_id=getIntent().getStringExtra("Groupid");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_members);
         add=(Button) findViewById(R.id.addmemberBtn) ;
@@ -69,8 +71,13 @@ Button add;
 add.setOnClickListener(new View.OnClickListener() {
     @Override
     public void onClick(View view) {
-        Toast.makeText(AddMembersActivity.this,"added succesfully",Toast.LENGTH_LONG);
-        startActivity(new Intent(AddMembersActivity.this, GroupListActivity.class));
+        DatabaseReference query=FirebaseDatabase.getInstance().getReference("Contribution");
+        String id=query.push().getKey();
+        String contributionid=query.push().getKey();
+        String memberid= FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        Contribution contribution=new Contribution(contributionid,memberid,group_id,"0");
+        query.child(id).setValue(contribution);
     }
 });
         if (mMemberlistitems.size() <= 0) {
@@ -200,10 +207,12 @@ check=(ImageView) itemView.findViewById(R.id.addmembersimageview);
         public void onClick(View view) {
             if(check.getVisibility()==view.GONE){
 check.setVisibility(View.VISIBLE);
+selectedmembers.add(mmemberModel.getMember_id());
 return;
             }
             else{
                 check.setVisibility(View.GONE);
+                selectedmembers.remove(mmemberModel.getMember_id());
             }
 
         }
