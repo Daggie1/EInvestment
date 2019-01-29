@@ -29,6 +29,18 @@ import com.bdhobare.mpesa.models.STKPush;
 import com.bdhobare.mpesa.models.STKPush.Builder;
 import com.bdhobare.mpesa.utils.Pair;
 import com.example.anonymous.e_investment.R;
+import com.example.anonymous.e_investment.models.Transaction;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.Date;
+import java.util.Random;
+import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity implements AuthListener, MpesaListener {
     //TODO: Replace these values from
@@ -46,11 +58,13 @@ public class MainActivity extends AppCompatActivity implements AuthListener, Mpe
     ProgressDialog dialog;
     EditText phone;
     EditText amount;
-
+String mygroup_id;
+    int amount_to_transact;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mygroup_id=getIntent().getStringExtra("groupid");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_mpesa);
         pay = (Button)findViewById(R.id.pay);
@@ -65,12 +79,12 @@ public class MainActivity extends AppCompatActivity implements AuthListener, Mpe
             @Override
             public void onClick(View view) {
                 String p = phone.getText().toString();
-                int a = Integer.valueOf(amount.getText().toString());
+                amount_to_transact = Integer.valueOf(amount.getText().toString());
                 if (p.isEmpty()){
                     phone.setError("Enter phone.");
                     return;
                 }
-                pay(p, a);
+                pay(p, amount_to_transact);
             }
         });
 
@@ -153,6 +167,7 @@ public class MainActivity extends AppCompatActivity implements AuthListener, Mpe
         Toast.makeText(this, CustomerMessage, Toast.LENGTH_SHORT).show();
 
         //add transaction
+        addingToTransaction();
     }
     @Override
     protected void onResume() {
@@ -166,5 +181,55 @@ public class MainActivity extends AppCompatActivity implements AuthListener, Mpe
     protected void onPause() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
         super.onPause();
+    }
+    public void addingToTransaction(){
+        DatabaseReference query= FirebaseDatabase.getInstance().getReference("Transactions");
+        String id=query.push().getKey();
+        String transact_Id= UUID.randomUUID().toString();
+        final String userId= FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String date_transacted=String.valueOf(new Date().getDate());
+        String amount=String.valueOf(amount_to_transact);
+       Transaction group=new Transaction(transact_Id,userId,date_transacted,mygroup_id,amount);
+       query.child(id).setValue(group);
+       //updating contribution
+        Query contributionref=FirebaseDatabase.getInstance().getReference("Contribution").orderByChild("group1d").equalTo(mygroup_id);
+        contributionref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+              if(dataSnapshot.exists()){
+                  for(DataSnapshot contribsnap:dataSnapshot.getChildren()){
+                      if(contribsnap.child("userId").getValue(String.class)==userId){
+                       int current_balance=Integer.valueOf(contribsnap.child("amoount_transacted").getValue(String.class))+amount_to_transact;
+
+                       contribsnap.getRef().child("amoount_transacted").setValue(String.valueOf(current_balance));
+                      }
+                  }
+              }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        //updating groups account totalAmount
+        Query groupref=FirebaseDatabase.getInstance().getReference("Groups").orderByChild("groupId").equalTo(mygroup_id);
+        groupref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+              if(dataSnapshot.exists()){
+                  for(DataSnapshot groupsnap:dataSnapshot.getChildren()){
+                      int current_balance=Integer.valueOf(groupsnap.child("totalAmount").getValue(String.class))+amount_to_transact;
+                      groupsnap.getRef().child("totalAmount").setValue(String.valueOf(current_balance));
+                  }
+              }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
     }
 }

@@ -127,7 +127,7 @@ fab.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 if (dataSnapshot.exists()) {
-                                    //mGrouplistitems.clear();
+                                    //mTransactionlistitems.clear();
                                     for (DataSnapshot groupSnapShot : dataSnapshot.getChildren()) {
 
                                         Group groupmodel = groupSnapShot.getValue(Group.class);

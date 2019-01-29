@@ -98,11 +98,7 @@ startActivity(addmembersintent);
         });
         return view;
     }
-    public void addProduct(){
-        Toast.makeText(getActivity(), uploadStatus.toString() +"with" +downloadurl.toString(), Toast.LENGTH_LONG).show();
-        if(uploadStatus){
-        }
-    }
+
     public void choosePhoto() {
         Intent photointent=new Intent();
         photointent.setType("image/*");
@@ -152,7 +148,7 @@ startActivity(addmembersintent);
                                 group_id=groupid;
                                 dbreference.child(id).setValue(group);
                                DatabaseReference query=FirebaseDatabase.getInstance().getReference("Contribution");
-                                String contributionid=query.push().getKey();
+                                String contributionid= UUID.randomUUID().toString();
                                 String memberid= FirebaseAuth.getInstance().getCurrentUser().getUid();
 
                                 Contribution contribution=new Contribution(contributionid,memberid,groupid,"0");

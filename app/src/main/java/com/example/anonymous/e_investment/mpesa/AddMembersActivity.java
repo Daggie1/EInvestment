@@ -33,10 +33,12 @@ import com.google.firebase.database.ValueEventListener;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class AddMembersActivity extends AppCompatActivity {
     ArrayList<Member> mMemberlistitems = new ArrayList<>();
     ArrayList<String> selectedmembers = new ArrayList<>();
+    ArrayList<String> selectedmembers_names = new ArrayList<>();
     RecyclerView mRecyclerView;
 Button add;
     FloatingActionButton fab;
@@ -72,12 +74,15 @@ add.setOnClickListener(new View.OnClickListener() {
     @Override
     public void onClick(View view) {
         DatabaseReference query=FirebaseDatabase.getInstance().getReference("Contribution");
+        for(int i=0;i<=selectedmembers.size()-1;i++){
         String id=query.push().getKey();
-        String contributionid=query.push().getKey();
-        String memberid= FirebaseAuth.getInstance().getCurrentUser().getUid();
-
-        Contribution contribution=new Contribution(contributionid,memberid,group_id,"0");
+        String contributionid= UUID.randomUUID().toString();
+        Contribution contribution=new Contribution(contributionid,selectedmembers.get(i),group_id,"0");
         query.child(id).setValue(contribution);
+        Toast.makeText(AddMembersActivity.this,selectedmembers_names.get(i)+" added",Toast.LENGTH_SHORT).show();
+    }
+
+
     }
 });
         if (mMemberlistitems.size() <= 0) {
@@ -199,7 +204,7 @@ check=(ImageView) itemView.findViewById(R.id.addmembersimageview);
             mmemberModel = member;
 
             groupName.setText(mmemberModel.getUsername());
-            //Glide.with(AddMembersActivity).load(mmemberModel.get()).into(groupImage);
+            Glide.with(AddMembersActivity.this).load(mmemberModel.getPicurl()).into(groupImage);
 
         }
 
@@ -208,11 +213,13 @@ check=(ImageView) itemView.findViewById(R.id.addmembersimageview);
             if(check.getVisibility()==view.GONE){
 check.setVisibility(View.VISIBLE);
 selectedmembers.add(mmemberModel.getMember_id());
+selectedmembers_names.add(mmemberModel.getUsername());
 return;
             }
             else{
                 check.setVisibility(View.GONE);
                 selectedmembers.remove(mmemberModel.getMember_id());
+                selectedmembers_names.add(mmemberModel.getUsername());
             }
 
         }

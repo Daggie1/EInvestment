@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.anonymous.e_investment.AboutUs;
 import com.example.anonymous.e_investment.R;
 import com.example.anonymous.e_investment.fragments.GroupListsFragment;
 import com.example.anonymous.e_investment.models.fragmentActivityLinker;
@@ -41,6 +42,16 @@ public class GroupListActivity extends fragmentActivityLinker {
         if (item.getItemId() == R.id.action_logout) {
             FirebaseAuth.getInstance().signOut();
             startActivity(new Intent(GroupListActivity.this,LoginActivity.class));
+        }
+        if(item.getItemId()==R.id.action_settings){
+String user=FirebaseAuth.getInstance().getCurrentUser().getUid();
+            Intent newIntent=new Intent(GroupListActivity.this, ProfileActivity.class);
+            newIntent.putExtra("member_id",user);
+            startActivity(newIntent);
+        }
+        if(item.getItemId()==R.id.action_about){
+
+            startActivity(new Intent(GroupListActivity.this, AboutUs.class));
         }
         return true;
     }

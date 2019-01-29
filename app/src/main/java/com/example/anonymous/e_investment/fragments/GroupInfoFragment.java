@@ -22,6 +22,8 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.anonymous.e_investment.R;
 import com.example.anonymous.e_investment.UI.Activities.GroupListActivity;
+import com.example.anonymous.e_investment.UI.Activities.ProfileActivity;
+import com.example.anonymous.e_investment.UI.Activities.TransactionActivity;
 import com.example.anonymous.e_investment.models.Contribution;
 
 import com.example.anonymous.e_investment.models.Group;
@@ -47,7 +49,7 @@ ImageView group_image,see_transaction;
 TextView balance,username,joined_date,divided,total;
 
 Button deposit;
-String member_username,member_usernameid;
+String member_username,group_id;
     String selected_groupId,selectedgroup_name;
     ArrayList<Member> mMemberlistitems = new ArrayList<>();
 
@@ -94,17 +96,19 @@ String member_username,member_usernameid;
         divided=(TextView) view.findViewById(R.id.divided);
         total=(TextView) view.findViewById(R.id.total_amount);
         deposit=(Button) view.findViewById(R.id.deposit);
-        deposit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(getActivity(), MainActivity.class));
-            }
-        });
+
 getcurrentUsername();
         Toast.makeText(getActivity(),""+selected_groupId,Toast.LENGTH_SHORT).show();
         loadGroupInfo(selected_groupId);
         loadContributionModule();
-
+        deposit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent depositIntent=new Intent(getActivity(), MainActivity.class);
+                depositIntent.putExtra("groupid",group_id);
+                startActivity(depositIntent);
+            }
+        });
         mRecyclerView = (RecyclerView) view.findViewById(R.id.members_recyclerview);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
 
@@ -118,6 +122,15 @@ getcurrentUsername();
             mRecyclerView.setAdapter(myAdapter);}
 
         mRecyclerView.setLayoutManager(layoutManager);
+        see_transaction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent transactionIntent=new Intent(getActivity(), TransactionActivity.class);
+                transactionIntent.putExtra("groupid",selected_groupId);
+                transactionIntent.putExtra("groupname",selected_groupId);
+                startActivity(transactionIntent);
+            }
+        });
      return  view;
     }
 
@@ -132,7 +145,7 @@ getcurrentUsername();
 
                        balance.setText(group.getTotalAmount());
 
-
+                       group_id=group.getGroupId();
                        Glide.with(getActivity()).load(group.getPic_url()).into(group_image);
                    }
                }
@@ -203,18 +216,16 @@ public void loadContributionModule(){
                     mMemberlistitems.clear();
                     for (DataSnapshot contributionSnapShot : dataSnapshot.getChildren()) {
 
-                        Contribution contributionmodel = contributionSnapShot.getValue(Contribution.class);
-
-                        Query query=FirebaseDatabase.getInstance().getReference("Members").orderByChild("member_id").equalTo(contributionmodel.getUserId());
+                        Query query=FirebaseDatabase.getInstance().getReference("Members").orderByChild("member_id").equalTo(contributionSnapShot.child("userId").getValue(String.class));
                         query.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 if (dataSnapshot.exists()) {
-                                    mMemberlistitems.clear();
-                                    for (DataSnapshot memberSnapShot : dataSnapshot.getChildren()) {
 
+                                    for (DataSnapshot memberSnapShot : dataSnapshot.getChildren()) {
+if(memberSnapShot.child("member_id").getValue(String.class) !=FirebaseAuth.getInstance().getCurrentUser().getUid()){
                                         Member membermodel = memberSnapShot.getValue(Member.class);
-                                        mMemberlistitems.add(membermodel);
+                                        mMemberlistitems.add(membermodel);}
                                     }
 
                                 }
@@ -294,14 +305,18 @@ public void loadContributionModule(){
             mmemberModel = member;
 
             groupName.setText(mmemberModel.getUsername());
-            //Glide.with(AddMembersActivity).load(mmemberModel.get()).into(groupImage);
+            Glide.with(getActivity()).load(mmemberModel.getPicurl()).into(groupImage);
 
         }
 
         @Override
         public void onClick(View view) {
 
+            String user=FirebaseAuth.getInstance().getCurrentUser().getUid();
+            Intent newIntent=new Intent(getActivity(), ProfileActivity.class);
 
+            newIntent.putExtra("member_id",mmemberModel.getMember_id());
+            startActivity(newIntent);
         }
     }
 }

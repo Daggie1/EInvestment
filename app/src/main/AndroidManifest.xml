@@ -43,7 +43,10 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".mpesa.AddMembersActivity"></activity>
+        <activity android:name=".mpesa.AddMembersActivity" />
+        <activity android:name=".UI.Activities.TransactionActivity" />
+        <activity android:name=".UI.Activities.ProfileActivity" />
+        <activity android:name=".AboutUs"></activity>
     </application>
 
 </manifest>
